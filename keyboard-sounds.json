@@ -1,0 +1,44 @@
+{
+    "path": "audio",
+    "typeKeyboardSounds": ["creamy", "clicky"],
+    "typeKeyboardSoundDefault": "creamy",
+    "typeKeys": {
+        "clicky": ["char"],
+        "creamy": ["char", "backspace", "space", "enter"]
+    },   
+    "typeKeyPref": "char",
+    "audios": {
+        "clicky": {
+            "char": [
+                "key-char-1.wav",
+                "key-char-2.wav",
+                "key-char-3.wav"
+            ]
+        },
+        "creamy": {
+            "char": [
+                "key-char-1.wav",
+                "key-char-2.wav",
+                "key-char-3.wav",
+                "key-char-4.wav",
+                "key-char-5.wav",
+                "key-char-6.wav"
+            ],
+            "backspace": [
+                "key-backspace-1.wav",
+                "key-backspace-2.wav",
+                "key-backspace-3.wav"
+            ],
+            "space": [
+                "key-space-1.wav",
+                "key-space-2.wav",
+                "key-space-3.wav"
+            ],
+            "enter": [
+                "key-enter-1.wav",
+                "key-enter-2.wav",
+                "key-enter-3.wav"
+            ]
+        }
+    }
+}
