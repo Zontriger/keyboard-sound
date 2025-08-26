@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title> Keyboard Sounds </title>
+	<style>
+		* {
+			margin: 0; padding: 0;
+			box-sizing: border-box;
+		}
+		
+		:root {
+			--color-bg-primary: #2C2C36;
+			--color-bg-secondary: #32323C;
+			--color-primary: #333468;
+			--color-secondary: #43498D;
+			--color-tertiary: #696FBB;
+			--color-shadow: #1E1E28;
+			--text-primary: white;
+			--text-secondary: lightgray;
+			--text-error: #D9C4C4;
+			--color-accent-primary: blue;
+			--color-accent-secondary: darkblue;
+			--color-error: #6F2525;
+		}
+		
+		#container {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			background: var(--color-bg-primary);
+			min-height: 100dvh;
+			box-sizing: border-box;
+			color: var(--text-primary);
+			isolation: isolate;
+		}
+		
+		.title {
+			margin: 10dvh 0 1.2rem 0;
+		}
+		
+		.keyboard-sound {
+			flex: 1;
+			max-width: 50rem;
+			display: flex;
+			flex-direction: column;
+			width: 100%;
+		}
+		
+		.loading-container, .no-loaded {
+			flex: 0 1 40dvh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		
+		.no-loaded {
+			flex-direction: column;
+			background: var(--color-error);
+			border-radius: 15px;
+			color: var(--text-error);
+			text-align: center;
+			padding: 1rem;
+			margin: 1rem;
+			box-shadow: 0 3px 10px var(--color-shadow);
+		}
+		
+		.no-loaded > h3 {
+			margin-bottom: 0.5rem;
+		}
+		
+		.loading-spin {
+			width: 1.2rem;
+			height: 1.2rem;
+			border-radius: 9999px;
+			position: relative;
+			background: var(--color-bg-primary);
+		}
+		
+		.loading-spin::before {
+			content: "";
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			z-index: -1;
+			border-radius: 9999px;
+			background: conic-gradient(from var(--angle), transparent, var(--color-accent-primary) 50%, var(--color-accent-primary) 60%, transparent 60%);
+			animation: spin 500ms linear infinite;
+		}
+		
+		.loading-spin::before {
+			--border: 0.2rem;
+			border-radius: calc(1rem + var(--border));
+			padding: var(--border); 
+		}
+		
+		.type-keyboard-sound-radios {
+			display: flex;
+			max-width: 100%;
+			overflow-x: auto;
+			padding: 0.6rem 0;
+		}
+		
+		.type-keyboard-sound-radios > :not(:last-child) {
+			margin: 0 0.8rem 0 0;
+		}
+		
+		.type-keyboard-sound-radios> :first-child {
+			margin-left: 1rem;
+		}
+
+		.type-keyboard-sound-radios> :last-child {
+			margin-right: 1rem;
+		}
+
+		.type-keyboard-sound-radios > label > input[name="type-keyboard-sound"] {
+			display: none;
+		}
+		
+		.type-keyboard-sound-radios > label {
+			flex: 0 0 6rem;
+			padding: 1rem;
+			border-radius: 1rem;
+			font-size: 1.2rem;
+			text-align: center;
+			position: relative;
+			background: var(--color-secondary);
+			box-sizing: border-box;
+			user-select: none;
+		}
+		
+		@property --angle {
+			syntax: "<angle>";
+			initial-value: 0deg;
+			inherits: false;
+		}
+		
+		.type-keyboard-sound-radios > label::before, .type-keyboard-sound-radios > label::after {
+			content: "";
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			z-index: -1;
+			background: var(--color-secondary);
+		}
+
+		.type-keyboard-sound-radios > label::before {
+			border-radius: 1rem;
+			box-shadow: 0 3px 5px var(--color-shadow);
+		}
+ 
+		.type-keyboard-sound-radios > label::after {
+			--border: 1px;
+			border-radius: calc(1rem + var(--border));
+			padding: var(--border);
+		}
+		
+		.type-keyboard-sound-radios > label:has(input[name="type-keyboard-sound"]:checked)::before,
+		.type-keyboard-sound-radios > label:has(input[name="type-keyboard-sound"]:checked)::after {
+			background: conic-gradient(from var(--angle), transparent, var(--color-accent-primary) 25%, var(--color-accent-primary) 50%, transparent 50%, var(--color-accent-primary) 75%);
+			animation: spin 3s linear infinite;
+		}
+		
+		.type-keyboard-sound-radios > label:has(input[name="type-keyboard-sound"]:checked)::before {
+			filter: blur(0.7rem);
+		}
+		
+		.type-keyboard-sound-radios > label:has(input[name="type-keyboard-sound"]:checked) {
+			background: var(--color-accent-secondary);
+		}
+		
+		@keyframes spin {
+			from {
+				--angle: 0deg;
+			}
+			to {
+				--angle: 360deg;
+			}
+		}
+		
+		.keys-input {
+			flex: 1;
+			display: flex;
+			position: relative;
+			max-height: 50rem;
+		}
+		
+		.keys-input > button {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			visibility: hidden;
+			position: absolute;
+			bottom: 0.2rem;
+			right: 0.2rem;
+			width: 3rem;
+			height: 3rem;
+			padding: 0.5rem;
+			border-radius: 2rem;
+			background: var(--color-bg-primary);
+			font-size: 1.5rem;
+			color: var(--text-secondary);
+			user-select: none;
+			transition: transform ease-out 50ms;
+			opacity: 0.7;
+			margin: 1rem;
+		}
+		
+		.keys-input > button:active {
+			background: var(--color-bg-secondary);
+			transform: scale(0.85);
+		}
+		
+		.keys-input > textarea {
+			flex: 1;
+			background: var(--color-bg-secondary);
+			border: 0;
+			border-radius: 15px;
+			box-shadow: 0 3px 10px var(--color-shadow);
+			outline: 0;
+			color: var(--text-primary);
+			font-size: 1.5rem;
+			padding: 1rem;
+			margin: 1rem;
+		}
+	</style>
+</head>
+<body>
+	<div id="container">
+		<h1 class="title"> Keyboard sound </h1>
+		<div class="keyboard-sound"></div>
+	</div>
+	
+	<template id="audios-not-loaded-template">
+		<div class="no-loaded">
+			<h3> No pudo inicializar la aplicación </h3>
+			<span> No cargaron los audios de teclado. Intente recargar la página</span>
+		</div>
+	</template>
+
+	<template id="audios-loaded-template">
+		<div class="type-keyboard-sound-radios"></div>
+		<div class="keys-input">
+			<textarea placeholder="Escribe aquí..."></textarea>
+			<button> × </button>
+		</div>
+	</template>
+	
+	<template id="type-keyboard-sound-radio-template">
+		<label>
+			<input type="radio" name="type-keyboard-sound">
+			<span></span>
+		</label> 
+	</template>
+	
+	<script>
+		/**
+		 * @license
+		 * Copyright (c) 2025 Ricardo Manuel Pacheco Campos alias Zontriger
+		 * SPDX-License-Identifier: MIT
+		*/
+		
+		"use strict";
+	
+		(() => {
+			async function load(url, errorMessage) {
+				try {
+					const resHTTP = await fetch(url);
+					if (!resHTTP.ok) throw new Error(`HTTP[${resHTTP.status} ${resHTTP.statusText}]`);
+					
+					const resData = await resHTTP.json();
+					return resData;
+				} catch(e) {
+					throw new Error(e.message);
+				}
+			}
+
+			// Creación de error personalizado para distinguirlo 
+			// de otro errores de JavaScript.
+			function errorFactory(name) {
+				return class CustomError extends Error {
+					constructor(message) {
+						super(message);
+						this.name = name;
+					}
+				} 
+			}
+			
+			const KeyboardSoundError = errorFactory("KeyboardSoundError");
+			const KeyboardSoundValidateError = errorFactory("KeyboardSoundValidateError");
+			
+			class KeyboardSound {
+				// URL con el JSON de los audios
+				#audiosURL = "keyboard-sounds.json"; 
+				
+				// Propiedades de control
+				#isAudiosLoaded = false;
+				#isPlayed = false;
+				
+				// Actual tipo de sonido de teclado y
+				#currentTypeKeyboardSound;
+				
+				// Propiedad donde se almacenará el JSON 
+				// recibido, y el objeto Audio y su ruta.
+				#Audios;
+				#audio = new Audio();
+				#audioSrc;
+				
+				// Asignación del tipo de tecla presionada
+				// en función del tipo de input detectado por 
+				// el evento 'input' sobre el elemento escuchador.
+				// Importante: El nombre de tecla sirve para indicar 
+				// el archivo de audio correspondiente según su tipo 
+				// de tecla.
+				static #inputTypeKey = {
+					insertLineBreak: "enter",
+					deleteContentForward: "backspace",
+					deleteContentBackward: "backspace",
+					insertText: {
+						" ": "space"
+					}
+				}
+				
+				// Mensajes de errores centralizados predefinidos
+				static #ERROR_MESSAGE = {
+					// KeyboardSoundError
+					NOTARGETKEYLISTENER: "targetKeyListener is required.",
+					TARGETKEYLISTENERINVALID: "Invalid targetKeyListener.",
+					AUDIOSURLINVALID: "Invalid Audios URL.",
+					AUDIOSNOFETCHED: "Audios not fetched from the network.",
+					AUDIOSNOLOADED: "Audios were not loaded.",
+					TYPEKEYBOARDSOUNDINVALID: "Invalid type key sound.",
+					TYPEKEYINVALID: "Invalid type key.",
+					FILEPATHINVALID: "Invalid file path.",
+					AUDIOPLAYBACKERROR: "Audio playback error.",
+					
+					// KeyboardSoundValidateError
+					INVALIDAUDIOSJSON: "Invalid Audios JSON.",
+					INVALIDPATH: "Invalid path.",
+					INVALIDTYPEKEYBOARDSOUNDS: "Invalid type keyboard sounds.",
+					INVALIDTYPEKEYBOARDSOUNDDEFAULT: "Invalid type keyboard sound default.",
+					INVALIDTYPEKEYS: "Invalid type keys.",
+					INVALIDTYPEKEYPREF: "Invalid type key pref.",
+					INVALIDAUDIOS: "Invalid audios files.",
+				}
+				
+				// Al crear una instancia se debe ingresar un 
+				// elemento el cual será el escuchador de las 
+				// teclas, que al presionarse sobre él, ejecutará
+				// el sonido de la tecla (detección de evento: 'input')
+				constructor(targetKeyListener, audiosURL = this.#audiosURL) {
+					if (!targetKeyListener) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.NOTARGETKEYLISTENER);
+					if (targetKeyListener !== document && !(targetKeyListener instanceof Node)) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.TARGETKEYLISTENERINVALID);
+
+					Object.freeze(KeyboardSound.#ERROR_MESSAGE);
+					this.target = targetKeyListener;
+					this.audiosURL = audiosURL;
+				}
+				
+				// Se encarga de validar los datos del JSON recibido,
+				// arrojando un error en caso de un mal formato.
+				#validateAudiosJSON(Audios) {
+					this.#validateRootProperties(Audios);
+					this.#validateTypeKeyboardSounds(Audios);
+					this.#validateTypeKeysAndFiles(Audios);
+				}
+				
+				// Valida las propiedades de primer nivel del JSON
+				#validateRootProperties(Audios) {
+					if (typeof Audios.path !== "string") {
+						throw new KeyboardSoundValidateError(KeyboardSound.#ERROR_MESSAGE.INVALIDPATH);
+					}
+					if (typeof Audios.audios !== "object" || Audios.audios === null) {
+						throw new KeyboardSoundValidateError(KeyboardSound.#ERROR_MESSAGE.INVALIDAUDIOS);
+					}
+					if (!Array.isArray(Audios.typeKeyboardSounds) || !Audios.typeKeyboardSounds.length) {
+						throw new KeyboardSoundValidateError(KeyboardSound.#ERROR_MESSAGE.INVALIDTYPEKEYBOARDSOUNDS);
+					}
+					if (typeof Audios.typeKeys !== "object" || Audios.typeKeys === null) {
+						throw new KeyboardSoundValidateError(KeyboardSound.#ERROR_MESSAGE.INVALIDTYPEKEYS);
+					}
+				}
+				
+				// Valida la consistencia entre 'typeKeyboardSounds', 'typeKeyboardSoundDefault' y el objeto 'audios'
+				#validateTypeKeyboardSounds(Audios) {
+					if (!Audios.typeKeyboardSounds.includes(Audios.typeKeyboardSoundDefault)) {
+						throw new KeyboardSoundValidateError(KeyboardSound.#ERROR_MESSAGE.INVALIDTYPEKEYBOARDSOUNDDEFAULT);
+					}
+					
+					for (const typeKeyboardSound of Audios.typeKeyboardSounds) {
+						if (!Object.keys(Audios.audios).includes(typeKeyboardSound)) {
+							const msg = KeyboardSound.#ERROR_MESSAGE.INVALIDTYPEKEYBOARDSOUNDS;
+							throw new KeyboardSoundValidateError(`${msg} El tipo '${typeKeyboardSound}' no se encuentra definido en el objeto 'audios'.`);
+						}
+					}
+				}
+				
+				// Valida la estructura anidada de 'typeKeys' y los archivos de audio correspondientes
+				#validateTypeKeysAndFiles(Audios) {
+					for (const [typeKeyboardSound, keys] of Object.entries(Audios.typeKeys)) {
+						if (!Audios.audios[typeKeyboardSound]) {
+							throw new KeyboardSoundValidateError(KeyboardSound.#ERROR_MESSAGE.INVALIDTYPEKEYS);
+						}
+						if (!Array.isArray(keys) || !keys.length) {
+							throw new KeyboardSoundValidateError(KeyboardSound.#ERROR_MESSAGE.INVALIDTYPEKEYS);
+						}
+						if (!Audios.audios[typeKeyboardSound][Audios.typeKeyPref]) {
+							throw new KeyboardSoundValidateError(KeyboardSound.#ERROR_MESSAGE.INVALIDTYPEKEYPREF);
+						}
+						
+						for (const key of keys) {
+							const audiosArray = Audios.audios[typeKeyboardSound]?.[key];
+							
+							if (!Array.isArray(audiosArray) || !audiosArray.length) {
+								throw new KeyboardSoundValidateError(KeyboardSound.#ERROR_MESSAGE.INVALIDAUDIOS);
+							}
+							
+							for (const audioFile of audiosArray) {
+								if (typeof audioFile !== "string") {
+									throw new KeyboardSoundValidateError(KeyboardSound.#ERROR_MESSAGE.INVALIDAUDIOS);
+								}
+							}
+						}
+					}
+				}
+				
+				// Carga del JSON con la información necesaria para ejecutar 
+				// la funcionalidad de KeyboardSound, además de su validación.
+				async loadAudios(audiosURL = this.#audiosURL) {
+					this.audiosURL = audiosURL;
+					try {
+						const Audios = await load(audiosURL);
+
+						this.#validateAudiosJSON(Audios)
+						
+						this.#Audios = Audios;
+						this.#currentTypeKeyboardSound = Audios.typeKeyboardSoundDefault;
+						this.#isAudiosLoaded = true;
+					} catch(e) {
+						if (e instanceof KeyboardSoundValidateError) {
+							throw new KeyboardSoundValidateError(KeyboardSound.#ERROR_MESSAGE.INVALIDAUDIOSJSON + ` ${e.message}`);
+						}
+						if (e instanceof KeyboardSoundError) {
+							throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOSNOFETCHED);
+						}
+						throw new Error(e);
+					}
+				}
+				
+				// Lógica de reproducción del audio de la tecla en función 
+				// del tipo de sonido de tecla, tipo de tecla y validaciones.
+				#handleKeyListener = (event) => {
+					this.#audio.pause();
+					
+					// Ruta a los audios, tipo de sonido de teclado actual
+					const path = this.#Audios.path;
+					const typeKeyboardSound = this.#currentTypeKeyboardSound;
+					let key = KeyboardSound.#inputTypeKey[event.inputType];
+					
+					// Si se detectó un input que no es de tecleada, no suena
+					if (!event.inputType) return;
+					
+					// Si la tecla es un carácter y es uno definido, 
+					// lo asigna a key, si no está definido, asigna 
+					// el tipo de tecla por preferencia.
+					if (event.inputType === "insertText") {
+						key = key[event.data];
+						if (!key) key = this.#Audios.typeKeyPref;
+					}
+					
+					// Si no es un carácter y no pertenece a las teclas 
+					// definidas según su tipo de sonido de teclado, asigna 
+					// el tipo de tecla por preferencia.
+					if (!this.#Audios.typeKeys[typeKeyboardSound].includes(key)) {
+						key = this.#Audios.typeKeyPref;
+					}
+					
+					// Define el array de rutas de archivos de audio, y 
+					// evalúa si realmente existe dado los atributos.
+					const files = this.#Audios.audios?.[typeKeyboardSound]?.[key];
+					
+					if (!files) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.FILEPATHINVALID);
+					
+					// Selecciona un archivo de audio según un índice pseudoaleatorio,
+					// formatea la ruta y lo asigna como ruta del objeto Audio.
+					const randomIndex = Math.floor(Math.random() * files.length);
+					const file = files[randomIndex];
+					this.#audio.src = `${path}/${typeKeyboardSound}/${file}`;
+					
+					// De haber algún problema con la ejecución del audio, muestra el 
+					// error en la consola.
+					const audioPromise = this.#audio.play();
+					
+					if (!audioPromise) return;
+					
+					audioPromise.catch(e => {
+						if (e.name !== "AbortError") {
+							throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOPLAYBACKERROR + ` ${e}`);
+						}
+					});
+				}
+				
+				// Inicia el escuchador al elemento, detectando 
+				// cambios en input, referenciando la función con 
+				// la función vinculada a la instancia del objeto
+				// de la clase.
+				play() {
+					if (!this.#isAudiosLoaded) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOSNOLOADED);
+					if (this.#isPlayed) return;
+					
+					this.target.addEventListener("input", this.#handleKeyListener);
+					this.#isPlayed = true;
+				}
+				
+				// Detiene al escuchador del elemento
+				stop() {
+					if (!this.#isAudiosLoaded) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOSNOLOADED);
+					if (!this.#isPlayed) return;
+					
+					this.target.removeEventListener("input", this.#handleKeyListener);
+					this.#isPlayed = false;
+				}
+				
+				// Cambia de sonido de teclado, validando que 
+				// este exista de entre los recibidos en el JSON
+				changeSound(typeKeyboardSound) {
+					if (!this.#isAudiosLoaded) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOSNOLOADED);
+					if (!this.#Audios.typeKeyboardSounds.includes(typeKeyboardSound)) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.TYPEKEYBOARDSOUNDINVALID);
+					
+					this.#currentTypeKeyboardSound = typeKeyboardSound;
+				}
+				
+				get audiosURL() {
+					return this.#audiosURL;
+				}
+				
+				set audiosURL(value) {
+					if (typeof value !== "string") throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOSURLINVALID);
+					this.#audiosURL = value;
+				}
+				
+				get isAudiosLoaded() {
+					return this.#isAudiosLoaded;
+				}
+				
+				get isPlayed() {
+					if (!this.#isAudiosLoaded) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOSNOLOADED);
+					return this.#isPlayed;
+				}
+				
+				get typeKeys() {
+					if (!this.#isAudiosLoaded) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOSNOLOADED);
+					return this.#Audios.typeKeys;
+				}
+				
+				get typeKeyboardSounds() {
+					if (!this.#isAudiosLoaded) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOSNOLOADED);
+					return this.#Audios.typeKeyboardSounds;
+				}
+				
+				get typeKeyboardSoundDefault() {
+					if (!this.#isAudiosLoaded) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOSNOLOADED);
+					return this.#Audios.typeKeyboardSoundDefault;
+				}
+				
+				set typeKeyboardSoundDefault(value) {
+					if (!this.#isAudiosLoaded) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOSNOLOADED);
+					if (!this.#Audios.typeKeyboardSounds.includes(value)) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.TYPEKEYBOARDSOUNDINVALID);
+					
+					this.#Audios.typeKeyboardSoundDefault = value;
+				}
+				
+				get typeKeyPref() {
+					if (!this.#isAudiosLoaded) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOSNOLOADED);
+					return this.#Audios.typeKeyPref;
+				}
+				
+				set typeKeyPref(value) {
+					if (!this.#isAudiosLoaded) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOSNOLOADED);
+					if (!this.#Audios.typeKeys[this.#currentTypeKeyboardSound].includes(value)) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.TYPEKEYINVALID);
+					
+					this.#Audios.typeKeyPref = value;
+				}
+				
+				get currentTypeKeyboardSound() {
+					if (!this.#isAudiosLoaded) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOSNOLOADED);
+					return this.#currentTypeKeyboardSound;
+				}
+			}
+			
+			async function initApp() {
+				const container = document.querySelector("#container");
+				const keyboardSoundContainer = container.querySelector(".keyboard-sound");
+				
+				// Mostrar loading spin hasta que carguen los audios
+				keyboardSoundContainer.innerHTML = `<div class="loading-container"><div class="loading-spin"></div></div>`; 
+				
+				const keyboardSound = new KeyboardSound(document);
+				
+				// Renderizar UI en función de si cargan los audios o no
+				try {
+					await keyboardSound.loadAudios();
+					audiosLoaded();
+				} catch (e) {
+					audiosNotLoaded();
+					console.error(e);
+				}
+				
+				function audiosLoaded() {
+					const template = document.querySelector("#audios-loaded-template").content.cloneNode(true);
+					
+					function renderTypeKeyboardSoundsRadios() {
+						const templateRadio = document.querySelector("#type-keyboard-sound-radio-template").content;
+						const typeKeyboardSoundRadios = template.querySelector(".type-keyboard-sound-radios");
+						
+						keyboardSound.typeKeyboardSounds.forEach(typeKeyboardSound => {
+							const radio = templateRadio.cloneNode(true);
+							const typeKeyboardSoundCapitalize = typeKeyboardSound[0].toUpperCase() + typeKeyboardSound.slice(1);
+							
+							const input = radio.querySelector("label > input[name='type-keyboard-sound']");
+							const span = radio.querySelector("label > span");
+							
+							input.value = typeKeyboardSound;
+							span.textContent = typeKeyboardSoundCapitalize;
+							
+							if (typeKeyboardSound === keyboardSound.typeKeyboardSoundDefault) input.checked = true;
+							
+							input.addEventListener("input", () => {
+								if (!input.checked) return;
+								keyboardSound.changeSound(input.value);
+							});
+							
+							typeKeyboardSoundRadios.append(radio);
+						});
+					}
+					
+					function enableClearBtn() {
+						const textarea = template.querySelector(".keys-input > textarea");
+						const clearBtn = template.querySelector(".keys-input > button");
+						
+						textarea.addEventListener("input", () => {
+							if (!textarea.value) {
+								clearBtn.style.visibility = "hidden";
+								return;
+							}
+							clearBtn.style.visibility = "visible";
+						});
+						
+						clearBtn.addEventListener("click", () => {
+							clearBtn.style.visibility = "hidden";
+							textarea.value = "";
+							textarea.focus();
+						});
+					}
+					
+					renderTypeKeyboardSoundsRadios();
+					enableClearBtn();
+					
+					keyboardSoundContainer.innerHTML = "";
+					keyboardSoundContainer.append(template);
+					keyboardSound.play();
+				}
+				
+				function audiosNotLoaded() {
+					const template = document.querySelector("#audios-not-loaded-template").content.cloneNode(true);
+					keyboardSoundContainer.innerHTML = "";
+					keyboardSoundContainer.append(template);
+				}
+			}
+			
+			initApp();
+		})();
+	</script>
+</body>
+</html>
