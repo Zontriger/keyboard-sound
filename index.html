@@ -290,6 +290,8 @@
 		 * @license
 		 * Copyright (c) 2025 Ricardo Manuel Pacheco Campos alias Zontriger
 		 * SPDX-License-Identifier: MIT
+		 *
+		 * Github: https://github.com/Zontriger/keyboard-sound
 		*/
 		
 		"use strict";
@@ -337,9 +339,6 @@
 				#typeKeys;
 				#typeKeyPref;
 				#files;
-				
-				#audio = new Audio();
-				#audioSrc;
 				
 				// Asignación del tipo de tecla presionada
 				// en función del tipo de input detectado por 
@@ -452,7 +451,7 @@
 				// Lógica de reproducción del audio de la tecla en función 
 				// del tipo de sonido de tecla, tipo de tecla y validaciones.
 				#handleKeyListener = (event) => {
-					this.#audio.pause();
+					const audio = new Audio();
 					
 					// Ruta a los audios, tipo de sonido de teclado actual
 					const path = this.#path;
@@ -487,11 +486,11 @@
 					// formatea la ruta y lo asigna como ruta del objeto Audio.
 					const randomIndex = Math.floor(Math.random() * files.length);
 					const file = files[randomIndex];
-					this.#audio.src = `${path}/${typeKeyboardSound}/${file}`;
+					audio.src = `${path}/${typeKeyboardSound}/${file}`;
 					
 					// De haber algún problema con la ejecución del audio, muestra el 
 					// error en la consola.
-					const audioPromise = this.#audio.play();
+					const audioPromise = audio.play();
 					
 					if (!audioPromise) return;
 					
@@ -636,6 +635,8 @@
 							input.addEventListener("input", () => {
 								if (!input.checked) return;
 								keyboardSound.changeSound(input.value);
+								textarea.focus();
+								
 							});
 							
 							typeKeyboardSoundRadios.append(radio);
@@ -643,7 +644,6 @@
 					}
 					
 					function enableClearBtn() {
-						const textarea = template.querySelector(".keys-input > textarea");
 						const clearBtn = template.querySelector(".keys-input > button");
 						
 						textarea.addEventListener("input", () => {
@@ -662,6 +662,7 @@
 					}
 
 					const template = document.querySelector("#audios-loaded-template").content.cloneNode(true);
+					const textarea = template.querySelector(".keys-input > textarea");
 
 					renderTypeKeyboardSoundsRadios();
 					enableClearBtn();

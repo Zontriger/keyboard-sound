@@ -57,19 +57,6 @@
                 "key-enter-4.wav"
             ]
         },
-        "typewriter": {
-            "char": [
-                "key-char-1.wav",
-                "key-char-2.wav",
-                "key-char-3.wav",
-                "key-char-4.wav",
-                "key-char-5.wav",
-                "key-char-6.wav"
-            ],
-            "enter": [
-                "key-enter-1.wav"
-            ]
-        },
         "classic": {
             "char": [
                 "key-char-1.wav",
@@ -97,6 +84,19 @@
                 "key-enter-2.wav",
                 "key-enter-3.wav",
                 "key-enter-4.wav"
+            ]
+        },
+        "typewriter": {
+            "char": [
+                "key-char-1.wav",
+                "key-char-2.wav",
+                "key-char-3.wav",
+                "key-char-4.wav",
+                "key-char-5.wav",
+                "key-char-6.wav"
+            ],
+            "enter": [
+                "key-enter-1.wav"
             ]
         }
     }
