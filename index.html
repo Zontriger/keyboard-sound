@@ -5,10 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title> Keyboard Sounds </title>
 	<style>
-		* {
-			margin: 0; padding: 0;
-			box-sizing: border-box;
-		}
+		* { margin: 0; padding: 0; }
 		
 		:root {
 			--color-bg-primary: #2C2C36;
@@ -310,17 +307,6 @@
 				}
 			}
 			
-			// Una función para verificar si dos arrays
-			// son iguales, porque JS no tiene eso nativo. 
-			// :/
-			function areArraysEqual(arr1, arr2) {
-				if (arr1.length !== arr2.length) return false;
-				for (let i = 0; i < arr1.length; i++) {
-					if (arr1[i] !== arr2[i]) return false;
-				}
-				return true;
-			}
-			
 			// Creación de error personalizado para distinguirlo 
 			// de otro errores de JavaScript.
 			function errorFactory(name) {
@@ -343,12 +329,15 @@
 				#isAudiosLoaded = false;
 				#isPlayed = false;
 				
-				// Actual tipo de sonido de teclado y
+				// Propiedades de instancia
 				#currentTypeKeyboardSound;
+				#path;
+				#typeKeyboardSounds;
+				#typeKeyboardSoundDefault;
+				#typeKeys;
+				#typeKeyPref;
+				#files;
 				
-				// Propiedad donde se almacenará el JSON 
-				// recibido, y el objeto Audio y su ruta.
-				#Audios;
 				#audio = new Audio();
 				#audioSrc;
 				
@@ -406,64 +395,25 @@
 				// Se encarga de validar los datos del JSON recibido,
 				// arrojando un error en caso de un mal formato.
 				#validateAudiosJSON(Audios) {
-					this.#validateRootProperties(Audios);
-					this.#validateTypeKeyboardSounds(Audios);
-					this.#validateTypeKeysAndFiles(Audios);
-				}
-				
-				// Valida las propiedades de primer nivel del JSON
-				#validateRootProperties(Audios) {
 					const msg = KeyboardSound.#ERROR_MESSAGE;
 					
 					if (typeof Audios.path !== "string" || !Audios.path.length) {
 						throw new KeyboardSoundValidateError(msg.INVALIDPATH);
 					}
-					if (!Array.isArray(Audios.typeKeyboardSounds) || !Audios.typeKeyboardSounds.length) {
-						throw new KeyboardSoundValidateError(msg.INVALIDTYPEKEYBOARDSOUNDS);
-					}
-					if (typeof Audios.typeKeys !== "object" || Audios.typeKeys === null) {
-						throw new KeyboardSoundValidateError(msg.INVALIDTYPEKEYS);
-					}
-					if (typeof Audios.audios !== "object" || Audios.audios === null) {
-						throw new KeyboardSoundValidateError(msg.INVALIDAUDIOS);
-					}
-				}
-				
-				// Valida la consistencia entre 'typeKeyboardSounds', 'typeKeyboardSoundDefault' y el objeto 'audios'
-				#validateTypeKeyboardSounds(Audios) {
-					const msg = KeyboardSound.#ERROR_MESSAGE;
-					
-					if (!areArraysEqual(Audios.typeKeyboardSounds, Object.keys(Audios.audios))) {
-						throw new KeyboardSoundValidateError(msg.INVALIDTYPEKEYBOARDSOUNDS);
-					}
-					if (!Audios.typeKeyboardSounds.includes(Audios.typeKeyboardSoundDefault)) {
+					if (!Object.keys(Audios.files).includes(Audios.typeKeyboardSoundDefault)) {
 						throw new KeyboardSoundValidateError(msg.INVALIDTYPEKEYBOARDSOUNDDEFAULT);
 					}
-				}
-				
-				// Valida la estructura anidada de 'typeKeys' y los archivos de audio correspondientes
-				#validateTypeKeysAndFiles(Audios) {
-					const msg = KeyboardSound.#ERROR_MESSAGE;
-					
-					if (!areArraysEqual(Object.keys(Audios.typeKeys), Audios.typeKeyboardSounds)) {
-						throw new KeyboardSoundValidateError(msg.INVALIDTYPEKEYS);
+					if (!Object.keys(Audios.files[Audios.typeKeyboardSoundDefault]).includes(Audios.typeKeyPref)) {
+						throw new KeyboardSoundValidateError(msg.INVALIDTYPEKEYPREF);
 					}
 					
-					for (const [typeKeyboardSound, keys] of Object.entries(Audios.typeKeys)) {
-						if (!areArraysEqual(Object.keys(Audios.audios[typeKeyboardSound]), keys)) {
-							throw new KeyboardSoundValidateError(msg.INVALIDTYPEKEYS);
-						}
-						if (!keys.includes(Audios.typeKeyPref)) {
-							throw new KeyboardSoundValidateError(msg.INVALIDTYPEKEYPREF);
-						}
-						
-						for (const key of keys) {
-							if (typeof key !== "string") {
-								throw new KeyboardSoundValidateError(msg.INVALIDTYPEKEYS);
+					for (const keys of Object.values(Audios.files)) {
+						for (const files of Object.values(keys)) {
+							if (!Array.isArray(files) || !files.length) {
+								throw new KeyboardSoundValidateError(msg.INVALIDAUDIOS);
 							}
-							
-							for (const file of Audios.audios[typeKeyboardSound][key]) {
-								if (typeof file !== "string") {
+							for (const file of files) {
+								if (typeof file !== "string" || !file.length) {
 									throw new KeyboardSoundValidateError(msg.INVALIDAUDIOS);
 								}
 							}
@@ -480,8 +430,13 @@
 						
 						this.#validateAudiosJSON(Audios)
 						
-						this.#Audios = Audios;
+						this.#path = Audios.path;
+						this.#files = Audios.files;
 						this.#currentTypeKeyboardSound = Audios.typeKeyboardSoundDefault;
+						this.#typeKeyboardSounds = Object.keys(Audios.files);
+						this.#typeKeyboardSoundDefault = Audios.typeKeyboardSoundDefault;
+						this.#typeKeys = Object.keys(this.#files[this.#currentTypeKeyboardSound]);
+						this.#typeKeyPref = Audios.typeKeyPref;
 						this.#isAudiosLoaded = true;
 					} catch(e) {
 						if (e instanceof KeyboardSoundValidateError) {
@@ -500,7 +455,7 @@
 					this.#audio.pause();
 					
 					// Ruta a los audios, tipo de sonido de teclado actual
-					const path = this.#Audios.path;
+					const path = this.#path;
 					const typeKeyboardSound = this.#currentTypeKeyboardSound;
 					let key = KeyboardSound.#inputTypeKey[event.inputType];
 					
@@ -512,19 +467,19 @@
 					// el tipo de tecla por preferencia.
 					if (event.inputType === "insertText") {
 						key = key[event.data];
-						if (!key) key = this.#Audios.typeKeyPref;
+						if (!key) key = this.#typeKeyPref;
 					}
 					
 					// Si no es un carácter y no pertenece a las teclas 
 					// definidas según su tipo de sonido de teclado, asigna 
 					// el tipo de tecla por preferencia.
-					if (!this.#Audios.typeKeys[typeKeyboardSound].includes(key)) {
-						key = this.#Audios.typeKeyPref;
+					if (!this.#typeKeys.includes(key)) {
+						key = this.#typeKeyPref;
 					}
 					
 					// Define el array de rutas de archivos de audio, y 
 					// evalúa si realmente existe dado los atributos.
-					const files = this.#Audios.audios?.[typeKeyboardSound]?.[key];
+					const files = this.#files?.[typeKeyboardSound]?.[key];
 					
 					if (!files) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.FILEPATHINVALID);
 					
@@ -572,9 +527,10 @@
 				// este exista de entre los recibidos en el JSON
 				changeSound(typeKeyboardSound) {
 					if (!this.#isAudiosLoaded) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOSNOLOADED);
-					if (!this.#Audios.typeKeyboardSounds.includes(typeKeyboardSound)) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.TYPEKEYBOARDSOUNDINVALID);
+					if (!this.#typeKeyboardSounds.includes(typeKeyboardSound)) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.TYPEKEYBOARDSOUNDINVALID);
 					
 					this.#currentTypeKeyboardSound = typeKeyboardSound;
+					this.#typeKeys = Object.keys(this.#files[this.#currentTypeKeyboardSound]);
 				}
 				
 				get audiosURL() {
@@ -597,36 +553,36 @@
 				
 				get typeKeys() {
 					if (!this.#isAudiosLoaded) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOSNOLOADED);
-					return this.#Audios.typeKeys;
+					return this.#typeKeys;
 				}
 				
 				get typeKeyboardSounds() {
 					if (!this.#isAudiosLoaded) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOSNOLOADED);
-					return this.#Audios.typeKeyboardSounds;
+					return this.#typeKeyboardSounds;
 				}
 				
 				get typeKeyboardSoundDefault() {
 					if (!this.#isAudiosLoaded) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOSNOLOADED);
-					return this.#Audios.typeKeyboardSoundDefault;
+					return this.#typeKeyboardSoundDefault;
 				}
 				
 				set typeKeyboardSoundDefault(value) {
 					if (!this.#isAudiosLoaded) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOSNOLOADED);
-					if (!this.#Audios.typeKeyboardSounds.includes(value)) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.TYPEKEYBOARDSOUNDINVALID);
+					if (!this.#typeKeyboardSounds.includes(value)) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.TYPEKEYBOARDSOUNDINVALID);
 					
-					this.#Audios.typeKeyboardSoundDefault = value;
+					this.#typeKeyboardSoundDefault = value;
 				}
 				
 				get typeKeyPref() {
 					if (!this.#isAudiosLoaded) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOSNOLOADED);
-					return this.#Audios.typeKeyPref;
+					return this.#typeKeyPref;
 				}
 				
 				set typeKeyPref(value) {
 					if (!this.#isAudiosLoaded) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.AUDIOSNOLOADED);
-					if (!this.#Audios.typeKeys[this.#currentTypeKeyboardSound].includes(value)) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.TYPEKEYINVALID);
+					if (!this.#typeKeys.includes(value)) throw new KeyboardSoundError(KeyboardSound.#ERROR_MESSAGE.TYPEKEYINVALID);
 					
-					this.#Audios.typeKeyPref = value;
+					this.#typeKeyPref = value;
 				}
 				
 				get currentTypeKeyboardSound() {
