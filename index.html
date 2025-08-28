@@ -340,6 +340,8 @@
 				#typeKeyPref;
 				#files;
 				
+				#audio = new Audio();
+				
 				// Asignación del tipo de tecla presionada
 				// en función del tipo de input detectado por 
 				// el evento 'input' sobre el elemento escuchador.
@@ -451,7 +453,7 @@
 				// Lógica de reproducción del audio de la tecla en función 
 				// del tipo de sonido de tecla, tipo de tecla y validaciones.
 				#handleKeyListener = (event) => {
-					const audio = new Audio();
+					this.#audio.pause();
 					
 					// Ruta a los audios, tipo de sonido de teclado actual
 					const path = this.#path;
@@ -486,11 +488,11 @@
 					// formatea la ruta y lo asigna como ruta del objeto Audio.
 					const randomIndex = Math.floor(Math.random() * files.length);
 					const file = files[randomIndex];
-					audio.src = `${path}/${typeKeyboardSound}/${file}`;
+					this.#audio.src = `${path}/${typeKeyboardSound}/${file}`;
 					
 					// De haber algún problema con la ejecución del audio, muestra el 
 					// error en la consola.
-					const audioPromise = audio.play();
+					const audioPromise = this.#audio.play();
 					
 					if (!audioPromise) return;
 					
