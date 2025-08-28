@@ -32,7 +32,29 @@
             "char": [
                 "key-char-1.wav",
                 "key-char-2.wav",
-                "key-char-3.wav"
+                "key-char-3.wav",
+                "key-char-4.wav",
+                "key-char-5.wav",
+                "key-char-6.wav",
+                "key-char-7.wav"
+            ],
+            "backspace": [
+                "key-backspace-1.wav",
+                "key-backspace-2.wav",
+                "key-backspace-3.wav",
+                "key-backspace-4.wav"
+            ],
+            "space": [
+                "key-space-1.wav",
+                "key-space-2.wav",
+                "key-space-3.wav",
+                "key-space-4.wav"
+            ],
+            "enter": [
+                "key-enter-1.wav",
+                "key-enter-2.wav",
+                "key-enter-3.wav",
+                "key-enter-4.wav"
             ]
         },
         "typewriter": {
