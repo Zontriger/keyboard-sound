@@ -5,98 +5,98 @@
     "files": {
         "creamy": {
             "char": [
-                "key-char-1.wav",
-                "key-char-2.wav",
-                "key-char-3.wav",
-                "key-char-4.wav",
-                "key-char-5.wav",
-                "key-char-6.wav"
+                "key-char-1.ogg",
+                "key-char-2.ogg",
+                "key-char-3.ogg",
+                "key-char-4.ogg",
+                "key-char-5.ogg",
+                "key-char-6.ogg"
             ],
             "backspace": [
-                "key-backspace-1.wav",
-                "key-backspace-2.wav",
-                "key-backspace-3.wav"
+                "key-backspace-1.ogg",
+                "key-backspace-2.ogg",
+                "key-backspace-3.ogg"
             ],
             "space": [
-                "key-space-1.wav",
-                "key-space-2.wav",
-                "key-space-3.wav"
+                "key-space-1.ogg",
+                "key-space-2.ogg",
+                "key-space-3.ogg"
             ],
             "enter": [
-                "key-enter-1.wav",
-                "key-enter-2.wav",
-                "key-enter-3.wav"
+                "key-enter-1.ogg",
+                "key-enter-2.ogg",
+                "key-enter-3.ogg"
             ]
         },
         "clicky": {
             "char": [
-                "key-char-1.wav",
-                "key-char-2.wav",
-                "key-char-3.wav",
-                "key-char-4.wav",
-                "key-char-5.wav",
-                "key-char-6.wav",
-                "key-char-7.wav"
+                "key-char-1.ogg",
+                "key-char-2.ogg",
+                "key-char-3.ogg",
+                "key-char-4.ogg",
+                "key-char-5.ogg",
+                "key-char-6.ogg",
+                "key-char-7.ogg"
             ],
             "backspace": [
-                "key-backspace-1.wav",
-                "key-backspace-2.wav",
-                "key-backspace-3.wav",
-                "key-backspace-4.wav"
+                "key-backspace-1.ogg",
+                "key-backspace-2.ogg",
+                "key-backspace-3.ogg",
+                "key-backspace-4.ogg"
             ],
             "space": [
-                "key-space-1.wav",
-                "key-space-2.wav",
-                "key-space-3.wav",
-                "key-space-4.wav"
+                "key-space-1.ogg",
+                "key-space-2.ogg",
+                "key-space-3.ogg",
+                "key-space-4.ogg"
             ],
             "enter": [
-                "key-enter-1.wav",
-                "key-enter-2.wav",
-                "key-enter-3.wav",
-                "key-enter-4.wav"
+                "key-enter-1.ogg",
+                "key-enter-2.ogg",
+                "key-enter-3.ogg",
+                "key-enter-4.ogg"
             ]
         },
         "classic": {
             "char": [
-                "key-char-1.wav",
-                "key-char-2.wav",
-                "key-char-3.wav",
-                "key-char-4.wav",
-                "key-char-5.wav",
-                "key-char-6.wav"
+                "key-char-1.ogg",
+                "key-char-2.ogg",
+                "key-char-3.ogg",
+                "key-char-4.ogg",
+                "key-char-5.ogg",
+                "key-char-6.ogg"
             ],
             "backspace": [
-                "key-backspace-1.wav",
-                "key-backspace-2.wav",
-                "key-backspace-3.wav",
-                "key-backspace-4.wav"
+                "key-backspace-1.ogg",
+                "key-backspace-2.ogg",
+                "key-backspace-3.ogg",
+                "key-backspace-4.ogg"
             ],
             "space": [
-                "key-space-1.wav",
-                "key-space-2.wav",
-                "key-space-3.wav",
-                "key-space-4.wav",
-                "key-space-5.wav"
+                "key-space-1.ogg",
+                "key-space-2.ogg",
+                "key-space-3.ogg",
+                "key-space-4.ogg",
+                "key-space-5.ogg"
             ],
             "enter": [
-                "key-enter-1.wav",
-                "key-enter-2.wav",
-                "key-enter-3.wav",
-                "key-enter-4.wav"
+                "key-enter-1.ogg",
+                "key-enter-2.ogg",
+                "key-enter-3.ogg",
+                "key-enter-4.ogg"
             ]
         },
         "typewriter": {
             "char": [
-                "key-char-1.wav",
-                "key-char-2.wav",
-                "key-char-3.wav",
-                "key-char-4.wav",
-                "key-char-5.wav",
-                "key-char-6.wav"
+                "key-char-1.ogg",
+                "key-char-2.ogg",
+                "key-char-3.ogg",
+                "key-char-4.ogg",
+                "key-char-5.ogg",
+                "key-char-6.ogg"
             ],
             "enter": [
-                "key-enter-1.wav"
+                "key-enter-1.ogg"
             ]
         }
     }
